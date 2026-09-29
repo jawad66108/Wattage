@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "Wattage",
+    "slug": "wattage",
+    "scheme": "wattage",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon-1024.png",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "backgroundColor": "#0B0F14"
+    },
+    "android": {
+      "package": "pk.edu.uow.wattage",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon-1024.png",
+        "backgroundColor": "#0B0F14"
+      },
+      "permissions": ["SCHEDULE_EXACT_ALARM", "POST_NOTIFICATIONS"]
+    },
+    "plugins": [
+      "expo-router",
+      "expo-sqlite",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon-1024.png",
+          "color": "#F2B705"
+        }
+      ]
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      }
+    }
+  }
+}
