@@ -10,7 +10,8 @@
         "buildType": "apk"
       },
       "env": {
-        "APP_ENV": "preview"
+        "APP_ENV": "preview",
+        "EXPO_PUBLIC_RC_ANDROID_KEY": "goog_fcNNZFPlxIKsCIJaDCwFdPWqweh"
       }
     },
     "production": {
@@ -19,7 +20,8 @@
         "buildType": "apk"
       },
       "env": {
-        "APP_ENV": "production"
+        "APP_ENV": "production",
+        "EXPO_PUBLIC_RC_ANDROID_KEY": "goog_fcNNZFPlxIKsCIJaDCwFdPWqweh"
       }
     }
   },

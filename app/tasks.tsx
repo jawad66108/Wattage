@@ -1,9 +1,26 @@
 import React, { useCallback, useState } from "react";
-import { View, Text, TextInput, Pressable, StyleSheet, FlatList, Switch, KeyboardAvoidingView, Platform } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  StyleSheet,
+  FlatList,
+  Switch,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import { useFocusEffect, router } from "expo-router";
 import TaskCard from "../components/TaskCard";
-import { listTasks, saveTask, deleteTask, markTaskDone, getSetting } from "../core/db";
+import {
+  listTasks,
+  saveTask,
+  deleteTask,
+  markTaskDone,
+  getSetting,
+} from "../core/db";
 import { generateId } from "../core/id";
+import { showAlert } from "../core/alert";
 import { isProEntitled } from "../core/purchases";
 import type { Task } from "../core/scheduler";
 
@@ -17,7 +34,10 @@ export default function Tasks() {
   const [isPro, setIsPro] = useState(false);
 
   const load = useCallback(async () => {
-    const [all, pro] = await Promise.all([listTasks({ includeDone: true }), isProEntitled().catch(() => false)]);
+    const [all, pro] = await Promise.all([
+      listTasks({ includeDone: true }),
+      isProEntitled().catch(() => false),
+    ]);
     setTasks(all);
     setIsPro(pro);
   }, []);
@@ -25,7 +45,7 @@ export default function Tasks() {
   useFocusEffect(
     useCallback(() => {
       load();
-    }, [load])
+    }, [load]),
   );
 
   async function handleAdd() {
@@ -37,16 +57,24 @@ export default function Tasks() {
       return;
     }
 
-    await saveTask({
-      id: generateId("task_"),
-      title: title.trim(),
-      durationMinutes: duration,
-      requiresMainsPower: requiresMains,
-    });
-    setTitle("");
-    setDurationText("30");
-    setRequiresMains(false);
-    load();
+    try {
+      await saveTask({
+        id: generateId("task_"),
+        title: title.trim(),
+        durationMinutes: duration,
+        requiresMainsPower: requiresMains,
+      });
+      setTitle("");
+      setDurationText("30");
+      setRequiresMains(false);
+      await load();
+    } catch (e) {
+      console.warn("[tasks] saveTask failed:", e);
+      showAlert(
+        "Couldn't save task",
+        String(e instanceof Error ? e.message : e),
+      );
+    }
   }
 
   async function handleToggleDone(task: Task) {
@@ -57,14 +85,23 @@ export default function Tasks() {
   }
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : undefined}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
       <FlatList
         style={styles.list}
         contentContainerStyle={styles.listContent}
         data={tasks}
         keyExtractor={(t) => t.id}
-        renderItem={({ item }) => <TaskCard task={item} onToggleDone={() => handleToggleDone(item)} />}
-        ListEmptyComponent={<Text style={styles.empty}>No tasks yet — add your first one below.</Text>}
+        renderItem={({ item }) => (
+          <TaskCard task={item} onToggleDone={() => handleToggleDone(item)} />
+        )}
+        ListEmptyComponent={
+          <Text style={styles.empty}>
+            No tasks yet — add your first one below.
+          </Text>
+        }
       />
 
       <View style={styles.form}>
@@ -102,8 +139,12 @@ export default function Tasks() {
 
         {!isPro && (
           <Text style={styles.limitNote}>
-            Free plan: {Math.min(tasks.length, FREE_TASK_LIMIT)}/{FREE_TASK_LIMIT} tasks.{" "}
-            <Text style={styles.limitLink} onPress={() => router.push("/paywall")}>
+            Free plan: {Math.min(tasks.length, FREE_TASK_LIMIT)}/
+            {FREE_TASK_LIMIT} tasks.{" "}
+            <Text
+              style={styles.limitLink}
+              onPress={() => router.push("/paywall")}
+            >
               Go Pro for unlimited.
             </Text>
           </Text>
@@ -135,10 +176,26 @@ const styles = StyleSheet.create({
   row: { flexDirection: "row", alignItems: "center", gap: 8, marginTop: 8 },
   durationInput: { width: 60, textAlign: "center" },
   minLabel: { color: "#8A94A6", fontSize: 13 },
-  switchRow: { flexDirection: "row", alignItems: "center", gap: 8, marginLeft: "auto" },
+  switchRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginLeft: "auto",
+  },
   switchLabel: { color: "#8A94A6", fontSize: 13 },
-  addBtn: { marginTop: 12, backgroundColor: "#F2B705", borderRadius: 10, paddingVertical: 12, alignItems: "center" },
+  addBtn: {
+    marginTop: 12,
+    backgroundColor: "#F2B705",
+    borderRadius: 10,
+    paddingVertical: 12,
+    alignItems: "center",
+  },
   addBtnText: { color: "#0B0F14", fontWeight: "700" },
-  limitNote: { marginTop: 10, fontSize: 12, color: "#8A94A6", textAlign: "center" },
+  limitNote: {
+    marginTop: 10,
+    fontSize: 12,
+    color: "#8A94A6",
+    textAlign: "center",
+  },
   limitLink: { color: "#F2B705", fontWeight: "600" },
 });
