@@ -18,7 +18,10 @@
         "foregroundImage": "./assets/icon-1024.png",
         "backgroundColor": "#0B0F14"
       },
-      "permissions": ["SCHEDULE_EXACT_ALARM", "POST_NOTIFICATIONS"]
+      "permissions": [
+        "SCHEDULE_EXACT_ALARM",
+        "POST_NOTIFICATIONS"
+      ]
     },
     "plugins": [
       "expo-router",
@@ -34,6 +37,9 @@
     "extra": {
       "router": {
         "origin": false
+      },
+      "eas": {
+        "projectId": "f445abc3-c6c7-4816-a292-300199ccb0a5"
       }
     }
   }
